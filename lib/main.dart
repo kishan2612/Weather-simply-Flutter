@@ -7,6 +7,7 @@ import 'package:weatherapp/Repository/Network/CallAndParse.dart';
 import 'package:weatherapp/Ui/CustomlistView.dart';
 import 'package:weatherapp/Ui/Weatherviewdetails/Weatherview.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
+import 'package:weatherapp/Ui/Bloc/MainViewBloc.dart';
 import "Ui/SearchView.dart";
 
 void main() => runApp(new MyApp());
@@ -54,38 +55,40 @@ class MainBody extends StatefulWidget {
 }
 
 class _MainBodyState extends State<MainBody> {
-  var _dbHelper = DatabaseHelper();
+  final _mainUiBloc = MainActivityBloc();
+
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  List<MainListRow> weatherRow;
 
-  Future<Null> _onRefreshPulled() async {
-    Completer<Null> completer = new Completer<Null>();
-    Future<bool> _isDBHasData = _dbHelper.checkDBHasData();
-    _isDBHasData.then((onValue) {
-      if (onValue) {
-        print("Yes DB has data");
-        Future<List<UpdateCity>> updateCitylist =
-            _dbHelper.getAllCityNamesfromDB();
+  var weatherRow;
 
-        updateCitylist.then((citylist) {
-          citylist.forEach((it) {
-            fetchOldData(it.cityName, it.cityId);
-          });
-          setState(() {
-            _getCityFromDB(_dbHelper).then((value) {
-              setState(() {
-                weatherRow = value;
-              });
-            });
-          });
-        });
-      }
-    });
-    new Future.delayed(new Duration(seconds: 2)).then((_) {
-      completer.complete();
-    });
-    return completer.future;
-  }
+  // Future<Null> _onRefreshPulled() async {
+  //   Completer<Null> completer = new Completer<Null>();
+  //   Future<bool> _isDBHasData = _dbHelper.checkDBHasData();
+  //   _isDBHasData.then((onValue) {
+  //     if (onValue) {
+  //       print("Yes DB has data");
+  //       Future<List<UpdateCity>> updateCitylist =
+  //           _dbHelper.getAllCityNamesfromDB();
+
+  //       updateCitylist.then((citylist) {
+  //         citylist.forEach((it) {
+  //           fetchOldData(it.cityName, it.cityId);
+  //         });
+  //         setState(() {
+  //           _getCityFromDB(_dbHelper).then((value) {
+  //             setState(() {
+  //               weatherRow = value;
+  //             });
+  //           });
+  //         });
+  //       });
+  //     }
+  //   });
+  //   new Future.delayed(new Duration(seconds: 2)).then((_) {
+  //     completer.complete();
+  //   });
+  //   return completer.future;
+  // }
 
   void deleteSwipeRow(_dbHelper, int id, context, int index) {
     print("Delete fuc");
@@ -118,25 +121,39 @@ class _MainBodyState extends State<MainBody> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       key: refreshKey,
-      onRefresh: _onRefreshPulled,
+      onRefresh: (){},
       child: Container(
         padding: EdgeInsets.only(left: 16.0, right: 16.0),
-        child: new FutureBuilder(
-            future: _getCityFromDB(_dbHelper),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
+        child: StreamBuilder(
+          initialData: [],
+          stream: _mainUiBloc.allCitiesWeatherData,
+          builder: (context,snapshot){
+             if (snapshot.hasError) {
+                return Text("Error:  ${snapshot.error}");
+              }else{
+                weatherRow = snapshot.data;
 
-                case ConnectionState.waiting:
-                  return new CircularProgressIndicator();
-                default:
-                  if (snapshot.hasError)
-                    return new Text('Error: ${snapshot.error}');
-                  else
-                    weatherRow = snapshot.data;
-                  return _mainListViewBuilder();
+                return _mainListViewBuilder();
               }
-            }),
+            
+          },
+        ),
+        // child: new FutureBuilder(
+        //     future: _getCityFromDB(_dbHelper),
+        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //       switch (snapshot.connectionState) {
+        //         case ConnectionState.none:
+
+        //         case ConnectionState.waiting:
+        //           return new CircularProgressIndicator();
+        //         default:
+        //           if (snapshot.hasError)
+        //             return new Text('Error: ${snapshot.error}');
+        //           else
+        //             weatherRow = snapshot.data;
+        //           return _mainListViewBuilder();
+        //       }
+        //     }),
       ),
     );
   }
@@ -154,8 +171,8 @@ class _MainBodyState extends State<MainBody> {
                 direction: DismissDirection.endToStart,
                 background: dissmissbackground,
                 onDismissed: (direction) {
-                  deleteSwipeRow(
-                      _dbHelper, weatherRow[index].cityId, context, index);
+                  // deleteSwipeRow(
+                  //     _dbHelper, weatherRow[index].cityId, context, index);
                 },
                 child: new GestureDetector(
                     onTap: () {
