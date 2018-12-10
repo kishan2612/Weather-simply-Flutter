@@ -6,7 +6,6 @@ import 'package:weatherapp/Repository/Database/DatabaseHelper.dart';
 import 'package:weatherapp/Repository/Network/CallAndParse.dart';
 import 'package:weatherapp/Ui/CustomlistView.dart';
 import 'package:weatherapp/Ui/Weatherviewdetails/Weatherview.dart';
-import 'package:weatherapp/Ui/addcity.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
 import "Ui/SearchView.dart";
 
@@ -21,9 +20,7 @@ class MyApp extends StatelessWidget {
         theme: new ThemeData(backgroundColor: Colors.white, fontFamily: 'Sans'),
         home: new MyHomepage(),
         routes: <String, WidgetBuilder>{
-          '/a': (BuildContext context) => new Addcity(),
-          '/b' : (BuildContext context) => new SearchView(),
-          // '/weatherview':(BuildContext context) => new WeatherView()
+          '/searchview' : (BuildContext context) => new SearchView(),
         });
   }
 }
@@ -42,8 +39,7 @@ class MyHomepage extends StatelessWidget {
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).pushNamed('/b');
-            // Navigator.of(context).pushNamed('/a');
+            Navigator.of(context).pushNamed('/searchview');
           },
           backgroundColor: Colors.black,
           child: new Icon(Icons.add),
@@ -132,7 +128,7 @@ class _MainBodyState extends State<MainBody> {
                 case ConnectionState.none:
 
                 case ConnectionState.waiting:
-                  return new Text('loading...');
+                  return new CircularProgressIndicator();
                 default:
                   if (snapshot.hasError)
                     return new Text('Error: ${snapshot.error}');
