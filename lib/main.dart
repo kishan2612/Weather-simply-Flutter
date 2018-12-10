@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:weatherapp/Model/UpdateCities.dart';
-import 'package:weatherapp/Repository/Database/DatabaseHelper.dart';
-import 'package:weatherapp/Repository/Network/CallAndParse.dart';
-import 'package:weatherapp/Ui/CustomlistView.dart';
 import 'package:weatherapp/Ui/Weatherviewdetails/Weatherview.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
 import 'package:weatherapp/Ui/Bloc/MainViewBloc.dart';
@@ -54,12 +50,38 @@ class MainBody extends StatefulWidget {
   _MainBodyState createState() => _MainBodyState();
 }
 
-class _MainBodyState extends State<MainBody> {
-  final _mainUiBloc = MainActivityBloc();
+class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
+  var _mainUiBloc = MainActivityBloc();
 
-  var refreshKey = GlobalKey<RefreshIndicatorState>();
+  var _refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  var weatherRow;
+  List<MainListRow> weatherRow;
+
+  AppLifecycleState _lifecycleState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    print("Init state");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+
+    print("dispose state");
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _lifecycleState = state;
+      print("State $state");
+    });
+  }
 
   // Future<Null> _onRefreshPulled() async {
   //   Completer<Null> completer = new Completer<Null>();
@@ -92,17 +114,29 @@ class _MainBodyState extends State<MainBody> {
 
   @override
   Widget build(BuildContext context) {
+    if(_lifecycleState == AppLifecycleState.resumed){
+          print("Lifecycle state ${_lifecycleState}");
+
+      if(_mainUiBloc != null){
+        _mainUiBloc.listenToCitiesWeatherData();
+      }
+    }
     return RefreshIndicator(
-      key: refreshKey,
+      key: _refreshKey,
       onRefresh: () {},
       child: Container(
         padding: EdgeInsets.only(left: 16.0, right: 16.0),
-        child: StreamBuilder(
-          initialData: [],
+        child: StreamBuilder<List<MainListRow>>(
           stream: _mainUiBloc.allCitiesWeatherData,
+          initialData: [],
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text("Error:  ${snapshot.error}");
+            print("Main Snapshot ${snapshot.data.length}");
+            if (snapshot.data.isEmpty) {
+              return Center(
+                child: Container(
+                  child: Text("Empty"),
+                ),
+              );
             } else {
               weatherRow = snapshot.data;
 
@@ -127,7 +161,8 @@ class _MainBodyState extends State<MainBody> {
                 direction: DismissDirection.endToStart,
                 background: dissmissbackground,
                 onDismissed: (direction) {
-                  _mainUiBloc.deleteSwipedRowfromDB(weatherRow[index].cityId,index);
+                  _mainUiBloc.deleteSwipedRowfromDB(
+                      weatherRow[index].cityId, index);
                 },
                 child: new GestureDetector(
                     onTap: () {
@@ -137,12 +172,55 @@ class _MainBodyState extends State<MainBody> {
                               builder: (context) =>
                                   WeatherView(mainListRow: weatherRow[index])));
                     },
-                    child: new CustomListrow(weatherRow[index])),
+                    child: _customListRow(weatherRow[index])),
               ),
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _customListRow(MainListRow listData) {
+    return new Container(
+      margin: new EdgeInsets.only(top: 16.0),
+      decoration: new BoxDecoration(
+          color: Colors.lightBlue,
+          borderRadius: new BorderRadius.circular(16.0)),
+      child: new GestureDetector(
+        onTap: () {
+          // Navigator.of(context).pushNamed('/weatherview');
+        },
+        child: Padding(
+          padding: new EdgeInsets.all(16.0),
+          child: new Row(
+            children: <Widget>[
+              new Expanded(
+                child: new Column(children: <Widget>[
+                  new Text(
+                    listData.climate,
+                    textScaleFactor: 0.9,
+                    textAlign: TextAlign.left,
+                  ),
+                  new Text(
+                    listData.temperature.round().toString(),
+                    textScaleFactor: 1.5,
+                    textAlign: TextAlign.left,
+                    style: new TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ], crossAxisAlignment: CrossAxisAlignment.start),
+              ),
+              new Expanded(
+                child: new Text(
+                  listData.city,
+                  textScaleFactor: 2.0,
+                  textAlign: TextAlign.right,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 

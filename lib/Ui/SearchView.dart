@@ -7,12 +7,13 @@ import 'package:weatherapp/Utilities/SampleSearchData.dart';
 import 'package:weatherapp/Ui/Bloc/SearchViewBloc.dart';
 
 class SearchView extends StatefulWidget {
-  final _searchBloc = SearchActivityBloc();
   @override
   _SearchViewState createState() => _SearchViewState();
 }
 
-class _SearchViewState extends State<SearchView> {
+class _SearchViewState extends State<SearchView>{
+    final _searchBloc = SearchActivityBloc();
+
   TextEditingController _textEditingController;
 
   String _listViewHeader = "RECOMMENDED CITIES";
@@ -30,13 +31,18 @@ Fill with dummy city name and url query at startup
   void initState() {
     super.initState();
     _textEditingController = new TextEditingController();
+
+    print("Search init state");
   }
 
   @override
   void dispose() {
     super.dispose();
     _textEditingController.dispose();
+
+    print("Search dispose state");
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +63,7 @@ Fill with dummy city name and url query at startup
             onSubmitted: ((query) {
               print("Submit query");
 
-              widget._searchBloc.searchForCity(query);
-             
+              _searchBloc.searchForCity(query);
             }),
             decoration: InputDecoration(
               hintText: "Search city",
@@ -90,28 +95,13 @@ Fill with dummy city name and url query at startup
         ],
       ),
       body: StreamBuilder<List<SearchList>>(
-        stream: widget._searchBloc.queryResult,
-        initialData: [],
-        builder: (BuildContext context ,AsyncSnapshot snapshot) 
-        {
-
-          switch(snapshot.connectionState){
-
-            case ConnectionState.done:
-
-            case ConnectionState.active:return Container(
-          child: _searchListBuilder(snapshot.data), );
-
-            case ConnectionState.waiting:return Center(child: CircularProgressIndicator());
-
-            case ConnectionState.none: 
-
-            default : 
-
-          }
-        }
-        
-      ),
+          stream:_searchBloc.queryResult,
+          initialData: [],
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return Container(
+              child: _searchListBuilder(snapshot.data),
+            );
+          }),
     );
   }
 
@@ -122,6 +112,24 @@ Fill with dummy city name and url query at startup
         return new ListTile(
           title: Text(searchList.elementAt(index).region),
           leading: Icon(Icons.location_city),
+          onTap: (){
+            print(searchList.elementAt(index).region);
+            var _response = _searchBloc.fetchCityDataAndReturnResponse(searchList.elementAt(index).url);
+            _response.then((response){
+            if(response){
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Data received successfully"),
+                )
+              );
+            }else{
+               Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("An error occurred"),
+                ));
+            }
+          });
+          }
 /*
         onTap the listview item fetch the required city weather details and store in DB.
         */

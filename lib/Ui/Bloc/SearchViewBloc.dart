@@ -10,9 +10,9 @@ class SearchActivityBloc {
     SampleSearchData.getKolkata(),
     SampleSearchData.getMumbai()
   ];
-  final _searchResultSubject = ReplaySubject<List<SearchList>>();
+  final _searchResultSubject = BehaviorSubject<List<SearchList>>();
 
-  SearchActivityBloc(){
+  SearchActivityBloc() {
     print("Bloc constructor");
     _searchResultSubject.add(_searchList);
   }
@@ -32,6 +32,12 @@ class SearchActivityBloc {
     print(searchlist.runtimeType);
     _searchList = searchlist;
 
-    _searchList.forEach((it) => print("value "+it.region));
+    _searchList.forEach((it) => print("value " + it.region));
+  }
+
+  Future<bool> fetchCityDataAndReturnResponse(String query) {
+    Future<bool> _response = fetchData(query);
+    
+    return _response;
   }
 }

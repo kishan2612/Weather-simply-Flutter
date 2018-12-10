@@ -11,22 +11,22 @@ class MainActivityBloc {
 
   MainActivityBloc() {
     _citiesWeatherDataSubject.add(_allCitiesWeatherDataList);
-    _listenToCitiesWeatherData();
+    listenToCitiesWeatherData();
   }
 
   Stream<List<MainListRow>> get allCitiesWeatherData =>
       _citiesWeatherDataSubject.stream;
 
-  void _listenToCitiesWeatherData() {
+  void listenToCitiesWeatherData() {
     print("Getting database ");
     _getCitiesWeatherDatafromDB(_dbHelper).then((it) {
       _citiesWeatherDataSubject.add(_allCitiesWeatherDataList);
     });
   }
 
-bool deleteSwipedRowfromDB(int index, int listIndex){
+bool deleteSwipedRowfromDB(int cityId, int listIndex){
   print("Delete fuc");
-    Future<int> _response = _dbHelper.deleteRow(index);
+    Future<int> _response = _dbHelper.deleteRow(cityId);
     _response.then((response){
       if(response>0) {
         _deleteRowfromList(listIndex);
@@ -48,6 +48,7 @@ void _deleteRowfromList(int listIndex){
     
         _allCitiesWeatherDataList = cityDetails;
 
+if(_allCitiesWeatherDataList.isNotEmpty){
    _allCitiesWeatherDataList.forEach((it)=> print("___ "+it.city));
-  }
+  }}
 }
