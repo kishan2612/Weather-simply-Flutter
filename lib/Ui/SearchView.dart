@@ -58,13 +58,7 @@ Fill with dummy city name and url query at startup
               print("Submit query");
 
               widget._searchBloc.searchForCity(query);
-              // Future<List<SearchList>> _searchQueryList =
-              //     fetchSearchQuery(query);
-              // _searchQueryList.then((result) {
-              //   setState(() {
-              //     _searchList = result;
-              //   });
-              // });
+             
             }),
             decoration: InputDecoration(
               hintText: "Search city",

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         theme: new ThemeData(backgroundColor: Colors.white, fontFamily: 'Sans'),
         home: new MyHomepage(),
         routes: <String, WidgetBuilder>{
-          '/searchview' : (BuildContext context) => new SearchView(),
+          '/searchview': (BuildContext context) => new SearchView(),
         });
   }
 }
@@ -90,70 +90,26 @@ class _MainBodyState extends State<MainBody> {
   //   return completer.future;
   // }
 
-  void deleteSwipeRow(_dbHelper, int id, context, int index) {
-    print("Delete fuc");
-    Future<int> response = _dbHelper.deleteRow(id);
-    response.then((resp) {
-      if (resp > 0) {
-        print("Index to delete $index");
-        _deleteCityfromList(index);
-        Scaffold.of(context).showSnackBar(new SnackBar(
-          content: new Text("Deleted"),
-        ));
-      }
-    });
-  }
-
-  _deleteCityfromList(int index) {
-    setState(() {
-      weatherRow.removeAt(index);
-    });
-  }
-
-  Future<List<MainListRow>> _getCityFromDB(_dbHelper) async {
-    print("Getcity MainList");
-    Future<List<MainListRow>> cityDetails = _dbHelper.getAllCity();
-
-    return cityDetails;
-  }
-
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       key: refreshKey,
-      onRefresh: (){},
+      onRefresh: () {},
       child: Container(
         padding: EdgeInsets.only(left: 16.0, right: 16.0),
         child: StreamBuilder(
           initialData: [],
           stream: _mainUiBloc.allCitiesWeatherData,
-          builder: (context,snapshot){
-             if (snapshot.hasError) {
-                return Text("Error:  ${snapshot.error}");
-              }else{
-                weatherRow = snapshot.data;
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text("Error:  ${snapshot.error}");
+            } else {
+              weatherRow = snapshot.data;
 
-                return _mainListViewBuilder();
-              }
-            
+              return _mainListViewBuilder();
+            }
           },
         ),
-        // child: new FutureBuilder(
-        //     future: _getCityFromDB(_dbHelper),
-        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //       switch (snapshot.connectionState) {
-        //         case ConnectionState.none:
-
-        //         case ConnectionState.waiting:
-        //           return new CircularProgressIndicator();
-        //         default:
-        //           if (snapshot.hasError)
-        //             return new Text('Error: ${snapshot.error}');
-        //           else
-        //             weatherRow = snapshot.data;
-        //           return _mainListViewBuilder();
-        //       }
-        //     }),
       ),
     );
   }
@@ -171,8 +127,7 @@ class _MainBodyState extends State<MainBody> {
                 direction: DismissDirection.endToStart,
                 background: dissmissbackground,
                 onDismissed: (direction) {
-                  // deleteSwipeRow(
-                  //     _dbHelper, weatherRow[index].cityId, context, index);
+                  _mainUiBloc.deleteSwipedRowfromDB(weatherRow[index].cityId,index);
                 },
                 child: new GestureDetector(
                     onTap: () {
@@ -181,7 +136,6 @@ class _MainBodyState extends State<MainBody> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   WeatherView(mainListRow: weatherRow[index])));
-                      //  Navigator.of(context).pushNamed('/weatherview');
                     },
                     child: new CustomListrow(weatherRow[index])),
               ),

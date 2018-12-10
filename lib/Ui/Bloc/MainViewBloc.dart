@@ -24,6 +24,24 @@ class MainActivityBloc {
     });
   }
 
+bool deleteSwipedRowfromDB(int index, int listIndex){
+  print("Delete fuc");
+    Future<int> _response = _dbHelper.deleteRow(index);
+    _response.then((response){
+      if(response>0) {
+        _deleteRowfromList(listIndex);
+        return true;
+      }
+    });
+
+    return false;
+}
+
+void _deleteRowfromList(int listIndex){
+  _allCitiesWeatherDataList.removeAt(listIndex);
+}
+
+
   Future<Null> _getCitiesWeatherDatafromDB(_dbHelper) async {
     print("Getcity MainList");
     List<MainListRow> cityDetails =await _dbHelper.getAllCity();
