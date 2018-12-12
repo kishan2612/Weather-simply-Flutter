@@ -55,7 +55,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
 
   var _refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  List<MainListRow> weatherRow;
+  // List<MainListRow> weatherRow;
 
   AppLifecycleState _lifecycleState;
 
@@ -114,10 +114,10 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if(_lifecycleState == AppLifecycleState.resumed){
-          print("Lifecycle state ${_lifecycleState}");
+    if (_lifecycleState == AppLifecycleState.resumed) {
+      print("Lifecycle state ${_lifecycleState}");
 
-      if(_mainUiBloc != null){
+      if (_mainUiBloc != null) {
         _mainUiBloc.listenToCitiesWeatherData();
       }
     }
@@ -138,9 +138,9 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
                 ),
               );
             } else {
-              weatherRow = snapshot.data;
+              // weatherRow = snapshot.data;
 
-              return _mainListViewBuilder();
+              return _mainListViewBuilder(snapshot.data);
             }
           },
         ),
@@ -148,11 +148,11 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     );
   }
 
-  Widget _mainListViewBuilder() {
+  Widget _mainListViewBuilder(List<MainListRow> data) {
     return new ListView.builder(
-      itemCount: weatherRow.length,
+      itemCount: data.length,
       itemBuilder: (BuildContext context, int index) {
-        final item = weatherRow[index].toString();
+        final item = data[index].city;
         return new Column(
           children: <Widget>[
             Container(
@@ -161,18 +161,13 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
                 direction: DismissDirection.endToStart,
                 background: dissmissbackground,
                 onDismissed: (direction) {
-                  _mainUiBloc.deleteSwipedRowfromDB(
-                      weatherRow[index].cityId, index);
+                  _mainUiBloc
+                      .deleteSwipedRowfromDB(data[index].cityId, index)
+                      .then((onValue) {
+                    print("Deleted successfully");
+                  });
                 },
-                child: new GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  WeatherView(mainListRow: weatherRow[index])));
-                    },
-                    child: _customListRow(weatherRow[index])),
+                child: _customListRow(data[index]),
               ),
             ),
           ],
@@ -182,15 +177,14 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
   }
 
   Widget _customListRow(MainListRow listData) {
-    return new Container(
-      margin: new EdgeInsets.only(top: 16.0),
-      decoration: new BoxDecoration(
-          color: Colors.lightBlue,
-          borderRadius: new BorderRadius.circular(16.0)),
-      child: new GestureDetector(
-        onTap: () {
-          // Navigator.of(context).pushNamed('/weatherview');
-        },
+    return GestureDetector(
+      onTap: (){
+        _openWeatherView(context, listData);
+      },
+      child: new Container(
+        margin: new EdgeInsets.only(top: 16.0),
+        decoration: new BoxDecoration(
+            color: Colors.amber, borderRadius: new BorderRadius.circular(16.0)),
         child: Padding(
           padding: new EdgeInsets.all(16.0),
           child: new Row(
@@ -233,4 +227,13 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
           style: new TextStyle(color: Colors.red, fontSize: 24.0),
         ),
       ));
+
+       _openWeatherView(BuildContext context, MainListRow listData) {
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => WeatherView(mainListRow: listData)));
 }
+}
+
+

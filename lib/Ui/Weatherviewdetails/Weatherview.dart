@@ -144,26 +144,25 @@ class _WeatherViewState extends State<WeatherView> {
             ),
           ),
           body: Container(
+            margin: EdgeInsets.only(bottom: 16),
             child: Column(children: <Widget>[
               new Expanded(flex: 4, child: WeatherImage()),
               new Expanded(flex: 1, child: MainTemperature()),
               new Expanded(flex: 2, child: ExtraDetails()),
-              new SafeArea(
-                child: new FloatingActionButton.extended(
-                  backgroundColor: Colors.lightBlue,
-                  label: Text(
-                    "Upcoming forecast",
-                    style: new TextStyle(color: Colors.black),
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_up,
-                    color: Colors.black,
-                  ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.all(const Radius.circular(16.0))),
-                  onPressed: _showBottomsheetCallback,
+              new FloatingActionButton.extended(
+                backgroundColor: Colors.amber,
+                label: Text(
+                  "Upcoming forecast",
+                  style: new TextStyle(color: Colors.black),
                 ),
+                icon: Icon(
+                  Icons.keyboard_arrow_up,
+                  color: Colors.black,
+                ),
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.all(const Radius.circular(16.0))),
+                onPressed: _showBottomsheetCallback,
               )
             ]),
           ),

@@ -24,7 +24,7 @@ class _WeatherImageState extends State<WeatherImage> {
         alignment: Alignment.topLeft,
         padding: new EdgeInsets.all(16.0),
         width: double.infinity,
-        color: Colors.lightBlue,
+        color: Colors.amber,
         child: new Column(
           children: <Widget>[
             Center(

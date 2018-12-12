@@ -23,7 +23,7 @@ class ExtraDetails extends StatelessWidget {
           ),
           new Container(
            
-            child:_extacoulum(Extraicons.humiditySvg,"Humidity","${_mainlistData.humidity}}"),
+            child:_extacoulum(Extraicons.humiditySvg,"Humidity","${_mainlistData.humidity}"),
           ),
           new Container(
             

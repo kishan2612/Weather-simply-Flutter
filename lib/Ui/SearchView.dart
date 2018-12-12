@@ -130,22 +130,6 @@ Fill with dummy city name and url query at startup
             }
           });
           }
-/*
-        onTap the listview item fetch the required city weather details and store in DB.
-        */
-          // onTap: () {
-          //   print(searchList.elementAt(index).url);
-          //   var response = fetchData(searchList.elementAt(index).url);
-          //   response.then((onValue) {
-          //     if (onValue) {
-          //       Scaffold.of(context).showSnackBar(
-          //           new SnackBar(content: Text("Data received Successfully")));
-          //     } else {
-          //       Scaffold.of(context).showSnackBar(
-          //           new SnackBar(content: Text("An error occurred")));
-          //     }
-          //   });
-          // },
         );
       },
       itemCount: searchList.length,
