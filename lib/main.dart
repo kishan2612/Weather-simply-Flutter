@@ -10,10 +10,11 @@ void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Flutter Demo',
+        title: "Weather Simply",
         theme: new ThemeData(backgroundColor: Colors.white, fontFamily: 'Sans'),
         home: new MyHomepage(),
         routes: <String, WidgetBuilder>{
@@ -28,11 +29,11 @@ class MyHomepage extends StatelessWidget {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(
-            "WEATHER",
+            "Weather Simply",
             style:
                 new TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.amber,
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: () {
@@ -53,7 +54,7 @@ class MainBody extends StatefulWidget {
 class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
   var _mainUiBloc = MainActivityBloc();
 
-  var _refreshKey = GlobalKey<RefreshIndicatorState>();
+  final _refreshKey = GlobalKey<RefreshIndicatorState>();
 
   // List<MainListRow> weatherRow;
 
@@ -83,39 +84,10 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     });
   }
 
-  // Future<Null> _onRefreshPulled() async {
-  //   Completer<Null> completer = new Completer<Null>();
-  //   Future<bool> _isDBHasData = _dbHelper.checkDBHasData();
-  //   _isDBHasData.then((onValue) {
-  //     if (onValue) {
-  //       print("Yes DB has data");
-  //       Future<List<UpdateCity>> updateCitylist =
-  //           _dbHelper.getAllCityNamesfromDB();
-
-  //       updateCitylist.then((citylist) {
-  //         citylist.forEach((it) {
-  //           fetchOldData(it.cityName, it.cityId);
-  //         });
-  //         setState(() {
-  //           _getCityFromDB(_dbHelper).then((value) {
-  //             setState(() {
-  //               weatherRow = value;
-  //             });
-  //           });
-  //         });
-  //       });
-  //     }
-  //   });
-  //   new Future.delayed(new Duration(seconds: 2)).then((_) {
-  //     completer.complete();
-  //   });
-  //   return completer.future;
-  // }
-
   @override
   Widget build(BuildContext context) {
     if (_lifecycleState == AppLifecycleState.resumed) {
-      print("Lifecycle state ${_lifecycleState}");
+      print("Lifecycle state $_lifecycleState");
 
       if (_mainUiBloc != null) {
         _mainUiBloc.listenToCitiesWeatherData();
@@ -123,7 +95,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     }
     return RefreshIndicator(
       key: _refreshKey,
-      onRefresh: () {},
+      onRefresh: _onRefresh,
       child: Container(
         padding: EdgeInsets.only(left: 16.0, right: 16.0),
         child: StreamBuilder<List<MainListRow>>(
@@ -138,8 +110,6 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
                 ),
               );
             } else {
-              // weatherRow = snapshot.data;
-
               return _mainListViewBuilder(snapshot.data);
             }
           },
@@ -178,13 +148,13 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
 
   Widget _customListRow(MainListRow listData) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         _openWeatherView(context, listData);
       },
       child: new Container(
         margin: new EdgeInsets.only(top: 16.0),
         decoration: new BoxDecoration(
-            color: Colors.amber, borderRadius: new BorderRadius.circular(16.0)),
+            color: Colors.amber[300], borderRadius: new BorderRadius.circular(16.0)),
         child: Padding(
           padding: new EdgeInsets.all(16.0),
           child: new Row(
@@ -228,12 +198,24 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
         ),
       ));
 
-       _openWeatherView(BuildContext context, MainListRow listData) {
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => WeatherView(mainListRow: listData)));
-}
-}
+  Future<void> _onRefresh() async {
+    print("OnRefresh");
+    await Future.delayed(const Duration(seconds: 3), () async {
+      _mainUiBloc.onRefreshPulled().then((resultBoolean) {
+        if (resultBoolean) {
+          print("Successfully updated data");
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Updated successfully"),
+          ));
+        }
+      });
+    });
+  }
 
-
+  _openWeatherView(BuildContext context, MainListRow listData) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WeatherView(mainListRow: listData)));
+  }
+}

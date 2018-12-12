@@ -1,6 +1,8 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
+import 'package:weatherapp/Model/UpdateCities.dart';
 import 'package:weatherapp/Repository/Database/DatabaseHelper.dart';
+import 'package:weatherapp/Repository/Network/CallAndParse.dart';
 
 class MainActivityBloc {
   final _dbHelper = DatabaseHelper();
@@ -39,7 +41,6 @@ class MainActivityBloc {
     _citiesWeatherDataSubject.add(_allCitiesWeatherDataList);
   }
 
-
   Future<Null> _getCitiesWeatherDatafromDB(_dbHelper) async {
     print("Getcity MainList");
     List<MainListRow> cityDetails = await _dbHelper.getAllCity();
@@ -51,7 +52,33 @@ class MainActivityBloc {
     }
   }
 
-  void onRefreshPulled(){
-    
+  Future<bool> onRefreshPulled() async {
+    var _updateResponse = await checkAndUpdateDB();
+    if (_updateResponse) {
+      listenToCitiesWeatherData();
+    }
+    return _updateResponse;
+  }
+
+  Future<bool> checkAndUpdateDB() async {
+    var response = false;
+    var _isDBHasData = await _dbHelper.checkDBHasData();
+    if (_isDBHasData) {
+      print("Yes it has data");
+      List<UpdateCity> _cityListFromDB =
+          await _dbHelper.getAllCityNamesfromDB();
+      await fetchAndUpdateDB(_cityListFromDB).then((onValue) {
+        response = true;
+      });
+    }
+    return response;
+  }
+
+  Future<void> fetchAndUpdateDB(List<UpdateCity> cityListFromDB) async {
+    cityListFromDB.forEach((it) {
+      fetchOldData(it.cityName, it.cityId);
+    }
+    );
+
   }
 }

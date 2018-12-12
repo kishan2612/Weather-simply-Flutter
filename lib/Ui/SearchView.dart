@@ -48,14 +48,14 @@ Fill with dummy city name and url query at startup
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.amber,
         title: Theme(
           data: ThemeData(
             primaryColor: Colors.black,
           ),
           child: new TextField(
             textInputAction: TextInputAction.go,
-            style: TextStyle(color: Colors.black),
+            style: TextStyle(color: Colors.black,fontSize: 18),
             controller: _textEditingController,
             cursorColor: Colors.black,
 

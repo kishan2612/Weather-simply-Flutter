@@ -132,7 +132,7 @@ class _WeatherViewState extends State<WeatherView> {
               mainListRow.city,
               style: new TextStyle(color: Colors.black),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.amber,
             leading: new IconButton(
               icon: new Icon(
                 Icons.arrow_back,
@@ -150,7 +150,7 @@ class _WeatherViewState extends State<WeatherView> {
               new Expanded(flex: 1, child: MainTemperature()),
               new Expanded(flex: 2, child: ExtraDetails()),
               new FloatingActionButton.extended(
-                backgroundColor: Colors.amber,
+                backgroundColor: Colors.amber[300],
                 label: Text(
                   "Upcoming forecast",
                   style: new TextStyle(color: Colors.black),
