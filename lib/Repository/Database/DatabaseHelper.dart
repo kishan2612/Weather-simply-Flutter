@@ -103,7 +103,6 @@ Future<List<UpdateCity>> getAllCityNamesfromDB() async{
     updateCityList.add(new UpdateCity(updatecityMap[i]["id"],updatecityMap[i]["city"]));
   }
   print("Update City Map "+updatecityMap.toString());
-  print("Update city Map count "+ updatecityMap.length.toString());
   return updateCityList;
 }
 

@@ -106,7 +106,12 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
             if (snapshot.data.isEmpty) {
               return Center(
                 child: Container(
-                  child: Text("Empty"),
+                  child: Text("No data available",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+
+                  ),),
                 ),
               );
             } else {
@@ -202,6 +207,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     print("OnRefresh");
     await Future.delayed(const Duration(seconds: 3), () async {
       _mainUiBloc.onRefreshPulled().then((resultBoolean) {
+        print("result boolean $resultBoolean");
         if (resultBoolean) {
           print("Successfully updated data");
           Scaffold.of(context).showSnackBar(SnackBar(

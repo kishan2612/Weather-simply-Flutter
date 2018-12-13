@@ -55,6 +55,7 @@ class MainActivityBloc {
   Future<bool> onRefreshPulled() async {
     var _updateResponse = await checkAndUpdateDB();
     if (_updateResponse) {
+      print("_updateresponse $_updateResponse");
       listenToCitiesWeatherData();
     }
     return _updateResponse;
@@ -65,9 +66,9 @@ class MainActivityBloc {
     var _isDBHasData = await _dbHelper.checkDBHasData();
     if (_isDBHasData) {
       print("Yes it has data");
-      List<UpdateCity> _cityListFromDB =
-          await _dbHelper.getAllCityNamesfromDB();
+      List<UpdateCity> _cityListFromDB = await _dbHelper.getAllCityNamesfromDB();
       await fetchAndUpdateDB(_cityListFromDB).then((onValue) {
+        print("check and update DB completed" );
         response = true;
       });
     }
@@ -75,8 +76,9 @@ class MainActivityBloc {
   }
 
   Future<void> fetchAndUpdateDB(List<UpdateCity> cityListFromDB) async {
-    cityListFromDB.forEach((it) {
-      fetchOldData(it.cityName, it.cityId);
+    cityListFromDB.forEach((it) async {
+      print("fetch and update DB ${it.cityName}");
+       await fetchOldData(it.cityName, it.cityId);
     }
     );
 

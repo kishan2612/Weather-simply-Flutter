@@ -18,15 +18,14 @@ import 'package:weatherapp/Model/SearchResult.dart';
   }
 }
 
-Future<bool> fetchOldData(String city, int id) async {
+Future<void> fetchOldData(String city, int id) async {
   var _url = GlobalConstants.forecastUrl + city + "&days=4";
   var response = await http.get(_url);
   if (response.statusCode == 200) {
     print(response.body);
-    parseUpdatedWeatherData(id, response.body);
-    return true;
-  } else {
-    return false;
+    await parseUpdatedWeatherData(id, response.body);
+//    return true;
+//    return false;
   }
 }
 
@@ -50,11 +49,11 @@ SearchResult parseSearchQuery(String body) {
   
 }
 
-void parseUpdatedWeatherData(int id, String body) {
+Future<void> parseUpdatedWeatherData(int id, String body) async{
   final parse = json.decode(body) as Map<String, dynamic>;
   CurrentWeatherModel model = CurrentWeatherModel.fromJson(parse);
   var _dbHelper = DatabaseHelper();
-  var response = _dbHelper.updateWeatherData(model, id);
+  var response = await _dbHelper.updateWeatherData(model, id);
 }
 
 void parseData(String body) {
