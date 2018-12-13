@@ -28,8 +28,8 @@ class _WeatherImageState extends State<WeatherImage> {
         child: new Column(
           children: <Widget>[
             Center(
-                child: new Text(
-              "Monday 25th",
+                child: new Text(_mainlistData.climate,
+
               style: new TextStyle(fontSize: 18.0),
             )),
             Center(
