@@ -88,11 +88,8 @@ Future<int> deleteRow(int cityId)async{
 
 }
 
-Future<bool> checkDBHasData()async{
-  if(await getCount()>0){
-    return true;
-  }
-  return false;
+Future<int> checkDBHasData()async{
+ return await getCount();
 }
 
 Future<List<UpdateCity>> getAllCityNamesfromDB() async{

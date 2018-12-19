@@ -23,9 +23,8 @@ Future<void> fetchOldData(String city, int id) async {
   var response = await http.get(_url);
   if (response.statusCode == 200) {
     print(response.body);
-    await parseUpdatedWeatherData(id, response.body);
-//    return true;
-//    return false;
+     parseUpdatedWeatherData(id, response.body);
+
   }
 }
 
@@ -54,6 +53,7 @@ Future<void> parseUpdatedWeatherData(int id, String body) async{
   CurrentWeatherModel model = CurrentWeatherModel.fromJson(parse);
   var _dbHelper = DatabaseHelper();
   var response = await _dbHelper.updateWeatherData(model, id);
+  print("parseupdateresponse $response");
 }
 
 void parseData(String body) {

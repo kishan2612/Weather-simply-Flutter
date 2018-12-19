@@ -106,12 +106,13 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
             if (snapshot.data.isEmpty) {
               return Center(
                 child: Container(
-                  child: Text("No data available",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-
-                  ),),
+                  child: Text(
+                    "No data available",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               );
             } else {
@@ -159,7 +160,8 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
       child: new Container(
         margin: new EdgeInsets.only(top: 16.0),
         decoration: new BoxDecoration(
-            color: Colors.amber[300], borderRadius: new BorderRadius.circular(16.0)),
+            color: Colors.amber[300],
+            borderRadius: new BorderRadius.circular(16.0)),
         child: Padding(
           padding: new EdgeInsets.all(16.0),
           child: new Row(
@@ -203,19 +205,26 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
         ),
       ));
 
-  Future<void> _onRefresh() async {
+  Future<Null> _onRefresh() async {
     print("OnRefresh");
-    await Future.delayed(const Duration(seconds: 3), () async {
-      _mainUiBloc.onRefreshPulled().then((resultBoolean) {
-        print("result boolean $resultBoolean");
-        if (resultBoolean) {
-          print("Successfully updated data");
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text("Updated successfully"),
-          ));
-        }
-      });
+    Completer<Null> completer = new Completer<Null>();
+    await _mainUiBloc.onRefreshPulled().then((_updateResult) {
+      if (_updateResult) {
+        showSnackBar(context, "Updated successfully");
+        completer.complete();
+      }else{
+        showSnackBar(context, "An error occurred");
+      }
     });
+
+    return completer.future;
+  }
+
+  void showSnackBar(BuildContext context,String message) {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 2),
+    ));
   }
 
   _openWeatherView(BuildContext context, MainListRow listData) {

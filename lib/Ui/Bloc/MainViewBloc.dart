@@ -5,6 +5,7 @@ import 'package:weatherapp/Repository/Database/DatabaseHelper.dart';
 import 'package:weatherapp/Repository/Network/CallAndParse.dart';
 
 class MainActivityBloc {
+
   final _dbHelper = DatabaseHelper();
 
   List<MainListRow> _allCitiesWeatherDataList = [];
@@ -54,6 +55,7 @@ class MainActivityBloc {
 
   Future<bool> onRefreshPulled() async {
     var _updateResponse = await checkAndUpdateDB();
+    print("onRefreshpulled : $_updateResponse");
     if (_updateResponse) {
       print("_updateresponse $_updateResponse");
       listenToCitiesWeatherData();
@@ -63,24 +65,34 @@ class MainActivityBloc {
 
   Future<bool> checkAndUpdateDB() async {
     var response = false;
-    var _isDBHasData = await _dbHelper.checkDBHasData();
-    if (_isDBHasData) {
+    var _dbDataCount = await _dbHelper.checkDBHasData();
+    if (_dbDataCount > 0) {
       print("Yes it has data");
-      List<UpdateCity> _cityListFromDB = await _dbHelper.getAllCityNamesfromDB();
-      await fetchAndUpdateDB(_cityListFromDB).then((onValue) {
-        print("check and update DB completed" );
-        response = true;
+      List<UpdateCity> _cityListFromDB =
+          await _dbHelper.getAllCityNamesfromDB();
+      print("check and update db " + _cityListFromDB.toString());
+      await fetchAndUpdateDB(_cityListFromDB).then((count) {
+        print("Count $count");
+        if (count == _dbDataCount) {
+          response = true;
+        }else{
+
+        }
       });
-    }
+    } else {}
+
     return response;
   }
 
-  Future<void> fetchAndUpdateDB(List<UpdateCity> cityListFromDB) async {
-    cityListFromDB.forEach((it) async {
-      print("fetch and update DB ${it.cityName}");
-       await fetchOldData(it.cityName, it.cityId);
-    }
-    );
+  Future<int> fetchAndUpdateDB(List<UpdateCity> cityListFromDB) async {
+    int count = 0;
 
+    for (int i = 0; i < cityListFromDB.length; i++) {
+      print("fetch and update DB ${cityListFromDB[i].cityName}");
+
+      await fetchOldData(cityListFromDB[i].cityName, cityListFromDB[i].cityId);
+      count++;
+    }
+    return count;
   }
 }
