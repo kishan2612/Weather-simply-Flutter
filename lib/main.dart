@@ -5,6 +5,8 @@ import 'package:weatherapp/Ui/Weatherviewdetails/Weatherview.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
 import 'package:weatherapp/Ui/Bloc/MainViewBloc.dart';
 import "Ui/SearchView.dart";
+import 'package:flutter/services.dart';
+import 'package:connectivity/connectivity.dart';
 
 void main() => runApp(new MyApp());
 
@@ -56,7 +58,10 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
 
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  // List<MainListRow> weatherRow;
+  String _connectionStatus = "unknown";
+
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   AppLifecycleState _lifecycleState;
 
@@ -71,6 +76,14 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
+    _connectivitySubscription.cancel();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        _connectionStatus = result.toString();
+        print("Network $_connectionStatus");
+      });
+    });
     WidgetsBinding.instance.removeObserver(this);
 
     print("dispose state");
@@ -84,6 +97,27 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     });
   }
 
+// Future<Null> initConnectivity() async {
+//     String connectionStatus;
+//     // Platform messages may fail, so we use a try/catch PlatformException.
+//     try {
+//       connectionStatus = (await _connectivity.checkConnectivity()).toString();
+//     } on PlatformException catch (e) {
+//       print(e.toString());
+//       connectionStatus = 'Failed to get connectivity.';
+//     }
+
+//     // If the widget was removed from the tree while the asynchronous platform
+//     // message was in flight, we want to discard the reply rather than calling
+//     // setState to update our non-existent appearance.
+//     if (!mounted) {
+//       return;
+//     }
+
+//     setState(() {
+//       _connectionStatus = connectionStatus;
+//     });
+//   }
   @override
   Widget build(BuildContext context) {
     if (_lifecycleState == AppLifecycleState.resumed) {
@@ -212,7 +246,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
       if (_updateResult) {
         showSnackBar(context, "Updated successfully");
         completer.complete();
-      }else{
+      } else {
         showSnackBar(context, "An error occurred");
       }
     });
@@ -220,7 +254,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
     return completer.future;
   }
 
-  void showSnackBar(BuildContext context,String message) {
+  void showSnackBar(BuildContext context, String message) {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(message),
       duration: const Duration(seconds: 2),
