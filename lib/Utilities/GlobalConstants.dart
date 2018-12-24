@@ -9,3 +9,5 @@ class GlobalConstants {
       "https://api.apixu.com/v1/search.json?key="+api_key+"&q=";
   static const api_key = "XXXX";
 }
+
+
