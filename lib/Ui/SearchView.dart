@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:collection';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:weatherapp/Model/SearchResult.dart';
-import 'package:weatherapp/Repository/Network/CallAndParse.dart';
-import 'package:weatherapp/Utilities/SampleSearchData.dart';
 import 'package:weatherapp/Ui/Bloc/SearchViewBloc.dart';
 
 class SearchView extends StatefulWidget {
@@ -23,16 +19,6 @@ class _SearchViewState extends State<SearchView> {
 
   TextEditingController _textEditingController;
 
-  String _listViewHeader = "RECOMMENDED CITIES";
-/*
-Fill with dummy city name and url query at startup
-*/
-  List<SearchList> _searchList = [
-    SampleSearchData.getChennai(),
-    SampleSearchData.getDelhi(),
-    SampleSearchData.getKolkata(),
-    SampleSearchData.getMumbai()
-  ];
 
   @override
   void initState() {

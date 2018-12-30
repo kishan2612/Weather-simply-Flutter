@@ -5,7 +5,6 @@ import 'package:weatherapp/Ui/Weatherviewdetails/Weatherview.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
 import 'package:weatherapp/Ui/Bloc/MainViewBloc.dart';
 import "Ui/SearchView.dart";
-import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 
 void main() => runApp(new MyApp());
@@ -85,7 +84,7 @@ class _MainBodyState extends State<MainBody> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     _connectivitySubscription.cancel();
-    
+    _mainUiBloc.disposeStream();
     WidgetsBinding.instance.removeObserver(this);
 
     print("dispose state");

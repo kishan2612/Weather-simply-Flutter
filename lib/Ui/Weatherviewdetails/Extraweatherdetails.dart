@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:weatherapp/Ui/Provider/WeatherViewProvider.dart';
 import 'package:weatherapp/Utilities/extraicons_icons.dart';
 

@@ -17,6 +17,10 @@ class MainActivityBloc {
     listenToCitiesWeatherData();
   }
 
+  void disposeStream(){
+    _citiesWeatherDataSubject.close();
+  }
+
   Stream<List<MainListRow>> get allCitiesWeatherData =>
       _citiesWeatherDataSubject.stream;
 

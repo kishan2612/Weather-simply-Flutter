@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:weatherapp/Model/listrowdata.dart';
 import 'package:weatherapp/Model/MainListRow.dart';
 
 class CustomListrow extends StatelessWidget {

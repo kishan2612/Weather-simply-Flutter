@@ -59,6 +59,6 @@ class WeatherDetailPresenter {
       case 1282:return Extraicons.snowSvg; 
        
     }
-
+    return Extraicons.sunnySvg;
   }
 }

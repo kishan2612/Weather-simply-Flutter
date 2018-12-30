@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class Toplayer extends CustomClipper<Path>{
   @override
   Path getClip(Size size) {
-    // TODO: implement getClip
 
      var path = new Path();
     path.lineTo(0.0, size.height - 20);
@@ -34,7 +33,6 @@ class Toplayer extends CustomClipper<Path>{
 class BottomArrrow extends CustomClipper<Path>{
   @override
   Path getClip(Size size) {
-    // TODO: implement getClip
     var path=new Path();
 
     var controlpointOne=new Offset(size.width/2, -50.0);
@@ -49,7 +47,6 @@ class BottomArrrow extends CustomClipper<Path>{
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) {
-    // TODO: implement shouldReclip
     return false;
   }
 }
